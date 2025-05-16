@@ -13,7 +13,7 @@ services:
       interval: 2m
       timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 60s
     volumes:
       - db_data:/var/lib/mysql
 
@@ -21,21 +21,24 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.migration
+    image: globant-migration
     depends_on:
       db:
         condition: service_healthy
     environment:
       - MYSQL_HOST=db
-      - MYSQL_USER=sochoag
-      - MYSQL_PASSWORD=140597
-      - MYSQL_DATABASE=globant
-      - MYSQL_PORT=3306
-    command: [ "python", "main.py" ]
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    command: [ "python", "src/main.py" ]
+    volumes:
+      - ./.migration_output:/data
 
   app:
     build:
       context: .
       dockerfile: Dockerfile.app
+    image: globant-app
     depends_on:
       db:
         condition: service_healthy
@@ -44,3 +47,4 @@ services:
     command: [ "python", "main.py" ]
 volumes:
   db_data:
+  .migration_output:
