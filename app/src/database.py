@@ -13,11 +13,6 @@ DB_USER = os.getenv("MYSQL_USER")
 DB_PASSWORD = os.getenv("MYSQL_PASSWORD")
 DB_NAME = os.getenv("MYSQL_DATABASE")
 
-print(f"{DB_HOST=}")
-print(f"{DB_USER=}")
-print(f"{DB_PASSWORD=}")
-print(f"{DB_NAME=}")
-
 DATABASE_URL = f"mysql+mysqlconnector://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 # Define la URL de la base de datos MySQL
 # Crea el motor de SQLAlchemy
