@@ -1,4 +1,7 @@
 # Using python:3.14-slim as the base image for a lightweight Python environment
 FROM python:3.10
 WORKDIR /migration
-COPY /data_migration/src/ .
+COPY /data_migration/requirements.txt .
+RUN pip install -r requirements.txt
+COPY /data_migration/src/ ./src
+COPY /data_migration/data/ ./data

@@ -1,3 +1,5 @@
 .env
 .qodo
 .vscode
+migration_env
+.*/
