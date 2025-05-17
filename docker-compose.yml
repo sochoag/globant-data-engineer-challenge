@@ -44,7 +44,14 @@ services:
         condition: service_healthy
       migration:
         condition: service_completed_successfully
-    command: [ "python", "main.py" ]
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    ports:
+      - "8000:8000"
+    command: [ "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000" ]
 volumes:
   db_data:
   .migration_output:

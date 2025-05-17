@@ -1,24 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from .database import Base
-
-
-class Department(Base):
-    __tablename__ = "departments"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    department = Column(String, nullable=False)
-
-    employees = relationship('HiredEmployee', back_populates='department')
-
-
-class Job(Base):
-    __tablename__ = 'jobs'
-
-    id = Column(Integer, primary_key=True)
-    job = Column(String(100), nullable=False)
-
-    employees = relationship('HiredEmployee', back_populates='job')
+from ..database import Base
 
 
 class HiredEmployee(Base):

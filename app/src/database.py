@@ -23,3 +23,13 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Define la base declarativa para los modelos
 Base = declarative_base()
+
+# Create the database connection
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
