@@ -49,6 +49,8 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - API_USER=${API_USER}
+      - API_PASS=${API_PASS}
     ports:
       - "8000:8000"
     command: [ "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000" ]
