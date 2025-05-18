@@ -142,6 +142,15 @@ Built with FastAPI , the service offers the following endpoints:
 
 > The request body should contain the file to be restored
 
+### 📄 Report Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET   | /report/quarterly_hires | Returns a list of departments and jobs grouped by quarterly hires |
+| GET   | /report/departments_above_average | Returns a list of departments above average hired |
+
+> This endpoint is not protected in order to keep data available for analysis
+
 ### 🔒 Security
 The API protects critical endpoints using HTTP Basic Authentication .
 

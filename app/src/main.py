@@ -11,6 +11,7 @@ import os
 # Local imports
 from .api.endpoints import router as api_router
 from .avro.endpoints import router as backup_router
+from .reports.endpoints import router as report_router
 
 # Authentication
 security = HTTPBasic()
@@ -60,6 +61,7 @@ app = FastAPI()
 # Add the routers to the app
 app.include_router(api_router, dependencies=[Depends(authenticate_user)])
 app.include_router(backup_router, dependencies=[Depends(authenticate_user)])
+app.include_router(report_router)
 
 # Exception handler for RequestValidationError
 
