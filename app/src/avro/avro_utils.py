@@ -6,6 +6,8 @@ from zipfile import ZipFile
 from tempfile import TemporaryDirectory
 from sqlalchemy import text
 
+error_log_file = "./.data/avro_errors.txt"
+
 backup_folder = TemporaryDirectory(dir=".", prefix="backup")
 BACKUP_DIR = backup_folder.name
 
@@ -16,6 +18,8 @@ def create_avro_backup(model, db, table_name, backup_dir=BACKUP_DIR):
 
     # Check if there are any records
     if not records:
+        with open(error_log_file, "a") as error_log:
+            error_log.write(f"No records found in {table_name}\n")
         raise HTTPException(
             status_code=404, detail=f"No records found in {table_name}")
 
@@ -100,15 +104,44 @@ def restore_table_from_avro(file, db, model, table_name, backup_dir=BACKUP_DIR):
         reader = fastavro.reader(file.file)
         records = list(reader)
     except Exception as e:
+        with open(error_log_file, "a") as error_log:
+            error_log.write(f"Invalid AVRO file: {str(e)}\n")
         # Handle any exceptions
         raise HTTPException(
             status_code=400, detail=f"Invalid AVRO file: {str(e)}")
 
-    # Delete all records from the table
-    db.execute(text("SET FOREIGN_KEY_CHECKS=0;"))
-    db.query(model).delete()
-    db.execute(text("SET FOREIGN_KEY_CHECKS=1;"))
-    db.commit()
+    # Check if the file has the expected columns
+    expected_columns = model.__table__.columns.keys()
+    if not records:
+        with open(error_log_file, "a") as error_log:
+            error_log.write(f"AVRO file has no records\n")
+        raise HTTPException(
+            status_code=404, detail=f"AVRO file has no records")
+
+    first_record = records[0]
+    missing_columns = [
+        col for col in expected_columns if col not in first_record]
+
+    if missing_columns:
+        with open(error_log_file, "a") as error_log:
+            error_log.write(
+                f"AVRO file is missing columns: {', '.join(missing_columns)}\n")
+        raise HTTPException(
+            status_code=400, detail=f"AVRO file is missing columns: {', '.join(missing_columns)}")
+
+    try:
+        # Delete all records from the table
+        db.execute(text("SET FOREIGN_KEY_CHECKS=0;"))
+        db.query(model).delete()
+        db.execute(text("SET FOREIGN_KEY_CHECKS=1;"))
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        with open(error_log_file, "a") as error_log:
+            error_log.write(
+                f"Error deleting records from {model.__tablename__}: {str(e)}\n")
+        raise HTTPException(
+            status_code=500, detail=f"Error deleting records from {model.__tablename__}: {str(e)}")
 
     # Prepare lists for successful and failed records
     successfully_inserted = []
@@ -141,6 +174,11 @@ def restore_table_from_avro(file, db, model, table_name, backup_dir=BACKUP_DIR):
             # Rollback the transaction
             db.rollback()
             db.expire_all()
+
+    if failed_records:
+        with open(error_log_file, "a") as error_log:
+            error_log.write(
+                f"Failed to restore {len(failed_records)} records to {table_name}\n")
 
     return {
         "message": f"Restored {len(successfully_inserted)} records to {table_name}",

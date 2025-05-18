@@ -6,3 +6,4 @@ app_env
 .*/
 __pycache__/
 backup*
+logs

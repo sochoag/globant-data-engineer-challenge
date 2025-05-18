@@ -3,9 +3,14 @@ from datetime import datetime
 
 MAX_RECORDS_PER_REQUEST = 1000
 
+error_log_file = "./.data/api_errors.txt"
+
 
 def validate_record_limit(data):
     if len(data) > MAX_RECORDS_PER_REQUEST:
+        with open(error_log_file, "a") as error_log:
+            error_log.write(
+                f"You can only send {MAX_RECORDS_PER_REQUEST} records at a time\n")
         raise HTTPException(
             status_code=422,
             detail={
@@ -57,6 +62,9 @@ def batch_create(db, model_class, model_list):
                             filtered_data[col_name] = datetime.strptime(
                                 value, "%Y-%m-%d %H:%M:%S")
                         else:
+                            with open(error_log_file, "a") as error_log:
+                                error_log.write(
+                                    f"Value '{value}' is not of type {expected_type.__name__}\n")
                             raise TypeError(
                                 f"Value '{value}' is not of type {expected_type.__name__}")
                     except Exception as te:
@@ -83,5 +91,10 @@ def batch_create(db, model_class, model_list):
             })
             db.rollback()
             db.expire_all()
+
+        if failed_records:
+            with open(error_log_file, "a") as error_log:
+                error_log.write(
+                    f"Failed to create {len(failed_records)} records in {model_class.__tablename__}\n")
 
     return successfully_inserted, failed_records

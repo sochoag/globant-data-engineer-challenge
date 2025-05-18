@@ -4,6 +4,11 @@ from .avro.endpoints import router as backup_router
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi import FastAPI
+import os
+
+# Create data folder if it doesn't exist
+if not os.path.exists("./.data"):
+    os.makedirs("./.data")
 
 app = FastAPI()
 
@@ -30,4 +35,5 @@ async def validation_exception_handler(request, exc):
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the HR Transactions API"}
+    import os
+    return {"message": f"Welcome to the HR Transactions API {os.getcwd()}"}
