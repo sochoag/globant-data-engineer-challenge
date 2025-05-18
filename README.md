@@ -23,6 +23,8 @@ This project solves the technical challenge from Globant by implementing:
    - Restore any table from its corresponding AVRO file
 5. **Basic authentication**
    - Protects sensitive endpoints using username/password
+6. **Frontend for API testing**
+   - A frontend was developed for testing
 
 ---
 
