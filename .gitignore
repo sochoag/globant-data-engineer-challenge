@@ -3,6 +3,7 @@
 .vscode
 migration_env
 app_env
+frontend_env
 .*/
 __pycache__/
 backup*

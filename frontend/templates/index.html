@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="jumbotron">
+    <h1 class="display-4">Globant Data Engineer Challenge</h1>
+    <p class="lead">Welcome to the user interface for the RESTful API of the Globant challenge solution.</p>
+    <hr class="my-4">
+    <p>This web page provides a way to interact with the API, which offers functionalities for data migration,
+      transaction insertion, and data backup/restoration, as described in the challenge.</p>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <h2>Main Features</h2>
+      <ul>
+        <li><strong>Data Migration:</strong> Migration of historical data from CSV files to a MySQL database.</li>
+        <li><strong>RESTful API:</strong> Interface for the RESTful API service to insert new transactions (up to 1000
+          records per request).</li>
+        <li><strong>Backup/Restoration:</strong> Interface for the backup and restoration functionality of each table in
+          AVRO format.</li>
+        <li><strong>Reports:</strong> Generation of reports such as 'quarterly hires' and 'departments above average
+          hires'.</li>
+        <li><strong>Security:</strong> Basic authentication to access protected API endpoints.</li>
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <h2>API Endpoints</h2>
+      <p>The API is built with FastAPI and offers the following endpoint groups:</p>
+      <h3>Data Endpoints</h3>
+      <ul>
+        <li><code>POST /departments</code>: Creates a new department.</li>
+        <li><code>POST /jobs</code>: Creates a new job.</li>
+        <li><code>POST /employees</code>: Creates a new employee.</li>
+      </ul>
+      <h3>Backup/Restore Endpoints (AVRO)</h3>
+      <ul>
+        <li><code>GET /avro/backup/departments</code>, <code>/jobs</code>, <code>/employees</code>, <code>/all</code>:
+          Backs up the table.</li>
+        <li><code>POST /avro/restore/departments</code>, <code>/jobs</code>, <code>/employees</code>: Restores the
+          table.</li>
+      </ul>
+      <h3>Report Endpoints</h3>
+      <ul>
+        <li><code>GET /report/quarterly_hires</code>: Quarterly hires report.</li>
+        <li><code>GET /report/departments_above_average</code>: Departments above average hires.</li>
+      </ul>
+      <p>See the API documentation for complete details on request parameters and responses.</p>
+    </div>
+  </div>
+
+  <h2>Usage</h2>
+  <p>To begin using the API, ensure that the application is running correctly (see the README for instructions on how to
+    run it with Docker).</p>
+  <p>You can interact with the API endpoints using this web page or any HTTP client (such as curl, Postman, Insomnia, or
+    a web browser). Protected endpoints require basic authentication with the configured credentials.</p>
+</div>
+{% endblock %}

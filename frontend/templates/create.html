@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="jumbotron">
+    <h1 class="display-4">Creation page</h1>
+    <p class="lead">
+      On this page, you can create new departments, jobs, and employees.
+    </p>
+    <hr class="my-4" />
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      {% include 'create_job.html' %}
+    </div>
+    <div class="col-md-4">
+      {% include 'create_department.html' %}
+    </div>
+    <div class="col-md-4">
+      {% include 'create_employee.html' %}
+    </div>
+  </div>
+</div>
+{% endblock %}

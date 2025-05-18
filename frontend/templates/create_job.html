@@ -1,0 +1,36 @@
+{% block content %}
+<div class="container d-flex justify-content-center mt-2">
+  <div class="card rounded-lg" style="max-width: 400px;">
+    <div class="card-body">
+      <h2 class="card-title lead">Create Jobs</h2>
+      <p class="card-text"><small>
+          Enter the title of the new job you want to create. You can enter 1 to 1000 job titles, separated by commas.
+        </small>
+      </p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      {% for category, message in messages %}
+      {% if category == 'success_job' %}
+      <div class="alert alert-success">
+        {{ message }}
+      </div>
+      {% endif %}
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
+
+      <form id="create-job-form" method="post" action="/create/job">
+        <div class="form-group">
+          <label for="job-title">Job Title:</label>
+          <input type="text" class="form-control" id="job-title" name="job_title" required>
+        </div>
+        <div class="mt-3">
+          <button type="submit" class="btn btn-primary">Create Job</button>
+        </div>
+      </form>
+      <div id="form-response" class="mt-3"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
