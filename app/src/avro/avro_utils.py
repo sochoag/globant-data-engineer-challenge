@@ -1,18 +1,35 @@
-import os
-import fastavro
-from datetime import datetime
+# Library imports
 from fastapi import HTTPException
+from sqlalchemy import text
+import fastavro
+import os
+from datetime import datetime
 from zipfile import ZipFile
 from tempfile import TemporaryDirectory
-from sqlalchemy import text
 
+# Local imports
 error_log_file = "./.data/avro_errors.txt"
 
+# Temporary directory for backups
 backup_folder = TemporaryDirectory(dir=".", prefix="backup")
 BACKUP_DIR = backup_folder.name
 
+# Function for creating an Avro backup
+
 
 def create_avro_backup(model, db, table_name, backup_dir=BACKUP_DIR):
+    """
+    Create an Avro backup of a given table in the database.
+
+    Parameters:
+    - model (Model): The SQLAlchemy model representing the table.
+    - db (Session): The SQLAlchemy session to the database.
+    - table_name (str): The name of the table to backup.
+    - backup_dir (str): The directory to store the backup in.
+
+    Returns:
+    - Filename of the backup file.
+    """
     # Obtain all records from the database
     records = db.query(model).all()
 
@@ -71,6 +88,17 @@ def create_avro_backup(model, db, table_name, backup_dir=BACKUP_DIR):
 
 
 def create_avro_full_backup(model_list, db, backup_dir=BACKUP_DIR):
+    """
+    Create a full backup of all tables in the database.
+
+    Parameters:
+    - model_list (list): A list of SQLAlchemy models.
+    - db (Session): The SQLAlchemy session to the database.
+    - backup_dir (str): The directory to store the backup in.
+
+    Returns:
+    - Filename of the backup file.
+    """
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     # Create a temporary directory on a predefined location and name
     temp_folder = TemporaryDirectory(dir=backup_dir)
@@ -99,6 +127,19 @@ def create_avro_full_backup(model_list, db, backup_dir=BACKUP_DIR):
 
 
 def restore_table_from_avro(file, db, model, table_name, backup_dir=BACKUP_DIR):
+    """
+    Restore a table from an AVRO file.
+
+    Parameters:
+    - file (UploadFile): The file to be restored.
+    - db (Session): The SQLAlchemy session to the database.
+    - model (Model): The SQLAlchemy model representing the table.
+    - table_name (str): The name of the table to restore.
+    - backup_dir (str): The directory to store the backup in.
+
+    Returns:
+    - dict: A dictionary containing the message and success/failed records.
+    """
     try:
         # Read the file
         reader = fastavro.reader(file.file)
@@ -178,7 +219,7 @@ def restore_table_from_avro(file, db, model, table_name, backup_dir=BACKUP_DIR):
     if failed_records:
         with open(error_log_file, "a") as error_log:
             error_log.write(
-                f"Failed to restore {len(failed_records)} records to {table_name}\n")
+                f"Failed to restore {len(failed_records)} records to {table_name}\nFailed records:\n{failed_records}\n")
 
     return {
         "message": f"Restored {len(successfully_inserted)} records to {table_name}",
@@ -187,5 +228,11 @@ def restore_table_from_avro(file, db, model, table_name, backup_dir=BACKUP_DIR):
 
 
 def remove_file(file_path):
+    """
+    Remove a file.
+
+    Parameters:
+    - file_path (str): The path to the file.
+    """
     if os.path.exists(file_path):
         os.remove(file_path)

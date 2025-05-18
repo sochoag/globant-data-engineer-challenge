@@ -1,19 +1,33 @@
+# Library imports
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+# Local imports
 from ..schemas import PostRequest
 from ..database import get_db
 from ..models import Department, Job, HiredEmployee
 from .api_utils import *
 
+# Router
 router = APIRouter()
 
+# Error log file
 error_log_file = "./.data/api_errors.txt"
 
 
 @router.post("/departments/")
 def create_departments(request: PostRequest, db: Session = Depends(get_db)):
+    """
+    Create departments.
+
+    Args:
+        request (PostRequest): The request body.
+        db (Session): The database session.
+
+    Returns:
+        dict: A dictionary containing the message and success/failed records.
+    """
     if isinstance(request, dict):
         department_list = [request]
     elif isinstance(request, list):
@@ -42,6 +56,16 @@ def create_departments(request: PostRequest, db: Session = Depends(get_db)):
 
 @router.post("/jobs/")
 def create_jobs(request: PostRequest, db: Session = Depends(get_db)):
+    """
+    Create jobs.
+
+    Args:
+        request (PostRequest): The request body.
+        db (Session): The database session.
+
+    Returns:
+        dict: A dictionary containing the message and success/failed records.
+    """
     if isinstance(request, dict):
         job_list = [request]
     elif isinstance(request, list):
@@ -71,6 +95,16 @@ def create_jobs(request: PostRequest, db: Session = Depends(get_db)):
 
 @router.post("/employees/")
 def create_employees(request: PostRequest, db: Session = Depends(get_db)):
+    """
+    Create employees.
+
+    Args:
+        request (PostRequest): The request body.
+        db (Session): The database session.
+
+    Returns:
+        dict: A dictionary containing the message and success/failed records.
+    """
     if isinstance(request, dict):
         employee_list = [request]
     elif isinstance(request, list):

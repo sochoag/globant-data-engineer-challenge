@@ -1,12 +1,24 @@
+# Library imports
 from fastapi import HTTPException
 from datetime import datetime
 
+# Constants
 MAX_RECORDS_PER_REQUEST = 1000
-
 error_log_file = "./.data/api_errors.txt"
+
+# Function for validating record limit
 
 
 def validate_record_limit(data):
+    """
+    Validate the record limit.
+
+    Args:
+        data: The data to be validated.
+
+    Raises:
+        HTTPException: If the record limit is exceeded.
+    """
     if len(data) > MAX_RECORDS_PER_REQUEST:
         with open(error_log_file, "a") as error_log:
             error_log.write(
@@ -19,24 +31,37 @@ def validate_record_limit(data):
             }
         )
 
+# Function for batch creating records
+
 
 def batch_create(db, model_class, model_list):
+    """
+    Batch create records.
+
+    Args:
+        db: The database connection.
+        model_class: The model class.
+        model_list: The list of model instances.
+
+    Returns:
+        list: A list of successfully inserted records.
+        list: A list of failed records.
+    """
     successfully_inserted = []
     failed_records = []
 
     for item in model_list:
         try:
-            # Extraer valores según tipo de dato
-
+            # Extract values based on data type
             raw_data = item
 
-            # Filtrar campos que no existen en el modelo
+            # Filter fields that don't exist in the model
             model_columns = model_class.__table__.columns.keys()
             filtered_data = {
                 key: value for key, value in raw_data.items() if key in model_columns
             }
 
-            # Validación automática de tipos y campos obligatorios
+            # Automatic type and field validation
             missing_fields = []
             type_errors = []
 
@@ -49,11 +74,10 @@ def batch_create(db, model_class, model_list):
                 value = filtered_data[col_name]
                 expected_type = column.type.python_type
 
-                # Intentar validar tipo
-
+                # Try to validate type
                 if not isinstance(value, expected_type):
                     try:
-                        # Intentar conversión básica si es posible
+                        # Try to convert to basic type if possible
                         if expected_type == int and isinstance(value, str) and value.isdigit():
                             filtered_data[col_name] = int(value)
                         elif expected_type == float and isinstance(value, (int, str)) and str(value).replace('.', '', 1).isdigit():
@@ -71,13 +95,15 @@ def batch_create(db, model_class, model_list):
                         type_errors.append(f"{col_name}: {te}")
 
             if missing_fields:
+                # Insert missing fields at the beginning of the list
                 type_errors.insert(
                     0, f"Missing required fields: {', '.join(missing_fields)}")
 
             if type_errors:
+                # Raise a ValueError with the joined type errors
                 raise ValueError("; ".join(type_errors))
 
-            # Crear instancia del modelo y guardar
+            # Create an instance of the model and save it
             db_item = model_class(**filtered_data)
             db.add(db_item)
             db.flush()
@@ -85,6 +111,7 @@ def batch_create(db, model_class, model_list):
             successfully_inserted.append(raw_data)
 
         except Exception as e:
+            # Add the record and error to the failed records list
             failed_records.append({
                 "record": raw_data,
                 "error": str(e)
@@ -95,6 +122,6 @@ def batch_create(db, model_class, model_list):
         if failed_records:
             with open(error_log_file, "a") as error_log:
                 error_log.write(
-                    f"Failed to create {len(failed_records)} records in {model_class.__tablename__}\n")
+                    f"Failed to create {len(failed_records)} records in {model_class.__tablename__}\nFailed records:\n{failed_records}\n")
 
     return successfully_inserted, failed_records
