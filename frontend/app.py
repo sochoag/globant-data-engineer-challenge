@@ -7,6 +7,7 @@ import os
 # Importar funciones desde el módulo utils/create_utils.py
 from utils.create_utils import create_departments, create_jobs, create_employees
 from utils.data_management_utils import backup, restore
+from utils.report_utils import generate_report_data
 
 app = Flask(__name__)
 app.secret_key = secrets.token_urlsafe(16)
@@ -81,6 +82,19 @@ def restore_jobs():
 @app.route('/data/restore/employees', methods=['POST'])
 def restore_employees():
     return restore('employees', request.files['file'])
+
+
+@app.route('/reports')
+def reports():
+    report_data = generate_report_data()
+
+    return render_template(
+        'reports.html',
+        chart1=report_data["chart1"],
+        chart2=report_data["chart2"],
+        quarterly_data=report_data["quarterly_data"],
+        above_avg_data=report_data["above_avg_data"]
+    )
 
 
 if __name__ == '__main__':
