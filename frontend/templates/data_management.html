@@ -1,0 +1,81 @@
+<!-- templates/backup.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="jumbotron">
+    <h1 class="display-4">Backup & Restore</h1>
+    <p class="lead">
+      Download database backups or restore data from an Avro file.
+    </p>
+    <hr class="my-4" />
+  </div>
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="mb-4">
+    {% for category, message in messages %}
+    <div class="alert alert-{{ 'success' if 'success' in category else 'danger' }}" role="alert">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  <div class="row">
+    <!-- Backup Section -->
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Download Backup</h5>
+          <p class="card-text">Click the buttons below to download a backup of each table or all tables.</p>
+
+          <div class="d-flex flex-wrap gap-2">
+            <a href="/data/backup/departments" class="btn btn-outline-primary btn-sm">Backup Departments</a>
+            <a href="/data/backup/jobs" class="btn btn-outline-primary btn-sm">Backup Jobs</a>
+            <a href="/data/backup/employees" class="btn btn-outline-primary btn-sm">Backup Employees</a>
+            <a href="/data/backup/all" class="btn btn-success btn-sm">Backup All Tables</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Restore Section -->
+    <div class="col-md-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Restore Data</h5>
+          <p class="card-text">Upload an Avro file to restore data into one of the tables.</p>
+
+          <!-- Restore Departments -->
+          <form action="/data/restore/departments" method="post" enctype="multipart/form-data" class="mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <label for="department_file" class="w-25 me-2">Restore Departments:</label>
+              <input type="file" name="file" id="department_file" class="form-control w-auto me-2">
+              <button type="submit" class="btn btn-primary">Restore</button>
+            </div>
+          </form>
+
+          <!-- Restore Jobs -->
+          <form action="/data/restore/jobs" method="post" enctype="multipart/form-data" class="mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <label for="jobs_file" class="w-25 me-2">Restore Jobs:</label>
+              <input type="file" name="file" id="jobs_file" class="form-control w-auto me-2">
+              <button type="submit" class="btn btn-primary">Restore</button>
+            </div>
+          </form>
+
+          <!-- Restore Employees -->
+          <form action="/data/restore/employees" method="post" enctype="multipart/form-data">
+            <div class="d-flex justify-content-between align-items-center">
+              <label for="employees_file" class="w-25 me-2">Restore Employees:</label>
+              <input type="file" name="file" id="employees_file" class="form-control w-auto me-2">
+              <button type="submit" class="btn btn-primary">Restore</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endblock %}

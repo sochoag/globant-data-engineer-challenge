@@ -66,6 +66,7 @@ services:
       db:
         condition: service_healthy
     environment:
+      - API_HOST=app
       - API_USER=${API_USER}
       - API_PASS=${API_PASS}
     ports:
