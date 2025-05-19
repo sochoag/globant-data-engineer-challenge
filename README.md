@@ -6,7 +6,16 @@ This project solves the technical challenge from Globant by implementing:
 - A **RESTful API service** for inserting new transactions (up to 1000 rows per request)
 - **Backup and restore functionality** for each table in **AVRO format**
 
+---
 
+# 🎉 Live app
+- restAPI endpoint: https://apiglobant.sochoag.com/
+- Frontend test app: https://appglobant.sochoag.com/
+
+## Default authentication for restAPI
+**username:** sochoag
+
+**pass:** 140597
 
 ---
 
